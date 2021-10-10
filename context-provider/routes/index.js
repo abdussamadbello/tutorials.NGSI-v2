@@ -20,39 +20,39 @@ const NOTIFY_ATTRIBUTES = ['refStore', 'refProduct', 'refShelf', 'type', 'locate
 
 const NGSI_V2_STORES = [
     {
-        href: 'app/store/urn:ngsi-ld:Store:001',
-        name: 'Store 1'
+        href: 'app/store/urn:ngsi-ld:Room:001',
+        name: 'Room 1'
     },
     {
-        href: 'app/store/urn:ngsi-ld:Store:002',
-        name: 'Store 2'
+        href: 'app/store/urn:ngsi-ld:Room:002',
+        name: 'Room 2'
     },
     {
-        href: 'app/store/urn:ngsi-ld:Store:003',
-        name: 'Store 3'
+        href: 'app/store/urn:ngsi-ld:Room:003',
+        name: 'Room 3'
     },
     {
-        href: 'app/store/urn:ngsi-ld:Store:004',
-        name: 'Store 4'
+        href: 'app/store/urn:ngsi-ld:Room:004',
+        name: 'Room 4'
     }
 ];
 
 const NGSI_LD_STORES = [
     {
-        href: 'app/store/urn:ngsi-ld:Building:store001',
-        name: 'Store 1'
+        href: 'app/store/urn:ngsi-ld:Building:room001',
+        name: 'Room 1'
     },
     {
-        href: 'app/store/urn:ngsi-ld:Building:store002',
-        name: 'Store 2'
+        href: 'app/store/urn:ngsi-ld:Building:room002',
+        name: 'Room 2'
     },
     {
-        href: 'app/store/urn:ngsi-ld:Building:store003',
-        name: 'Store 3'
+        href: 'app/store/urn:ngsi-ld:Building:room003',
+        name: 'Room 3'
     },
     {
-        href: 'app/store/urn:ngsi-ld:Building:store004',
-        name: 'Store 4'
+        href: 'app/store/urn:ngsi-ld:Building:room004',
+        name: 'Room 4'
     }
 ];
 
@@ -114,7 +114,7 @@ router.get('/version', function (req, res) {
 // Render the monitoring page
 router.get('/device/monitor', function (req, res) {
     const traffic = TRANSPORT === 'HTTP' ? 'Northbound Traffic' : 'MQTT Messages';
-    const title = 'IoT Devices (' + DEVICE_PAYLOAD + ' over ' + TRANSPORT + ')';
+    const title = 'Smart Home IoT Devices (' + DEVICE_PAYLOAD + ' over ' + TRANSPORT + ')';
     const securityEnabled = SECURE_ENDPOINTS;
     const oidcEnabled = OIDC_ENABLED;
     res.render('device-monitor', {
