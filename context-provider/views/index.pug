@@ -58,33 +58,14 @@ block content
                 a.button(href="hybridOICGrant") OpenID over Hybrid
   div
     h3 Monitors
-    a(href="app/monitor") App Monitor
-    | &nbsp;
-    a(href="device/monitor") Device Monitor
-    | &nbsp;
-    a(href="device/history") Short-Term History
-
-  div
-    h3 Room Details
-    - if (securityEnabled)
-      p Any logged-in user can access these:
-      each store in stores
-        a.red(href=`${store.href}`)  #{store.name}
-        | &nbsp;
-    - else
-      each store in stores
-        a(href=`${store.href}`)  #{store.name}
-        | &nbsp;
-
-  - if (securityEnabled)
+      div
+        a(href="app/monitor") App Monitor
+    |   &nbsp;
+      div
+        a(href="device/monitor") Device Monitor
+    |  &nbsp;
     div
-      h3 Restricted Areas
-      p Only Managers have access:
-      a.red(href="app/price-change") Change Prices
-      | &nbsp;
-      a.red(href="app/order-stock") Order Stock
-      | &nbsp;
-
+        a(href="device/history") Short-Term History
 
   div
     h3
