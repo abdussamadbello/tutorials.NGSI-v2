@@ -59,7 +59,7 @@ function createNGSILDRequest(action, id) {
 function sendCommand(req, res) {
     debug('sendCommand: ' + req.body.id + ' ' + req.body.action);
     let id = req.body.id.split(':').pop();
-    const action = req.body.action;
+    let action = req.body.action;
     if (!res.locals.authorized) {
         // If the user is not authorized, return an error code.
         res.setHeader('Content-Type', 'application/json');
@@ -73,11 +73,22 @@ function sendCommand(req, res) {
         return res.status(204).send();
     }
 
+    if(action === 'measure'){
+
+    IoTDevices.temperatureSensor('temperature' + id);
+    return res.status(204).send();
+
+    }
+
     if (action === 'ring') {
         id = 'Bell:' + id;
     } else if (action === 'on' || action === 'off') {
         id = 'Lamp:' + id;
-    } else {
+    }
+    else if (action === 'high' || action === 'low') {   
+        action = action === 'high' ? 'on':'off';
+        id = 'Fan:' + id;
+    }else {
         id = 'Door:' + id;
     }
 

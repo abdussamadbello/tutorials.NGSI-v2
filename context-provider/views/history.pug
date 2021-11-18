@@ -14,12 +14,16 @@ block content
       h2 Motion Sensor
       canvas(id="barChart" width="400px" height="200px")
     div(style="float: left;")
+      h2 Temperature Sensor
+      canvas(id="barChart2" width="400px" height="200px")
+    div(style="float: left;")
       h2 Smart Lamp
       canvas(id="lineChart" width="400px" height="200px")
     div(style="clear: both;")
 
   script(type='text/javascript').
     var sumMotionData =!{JSON.stringify(sumMotionData)}
+    var sumTemperatureData =!{JSON.stringify(sumTemperatureData)}
     var minLampData =!{JSON.stringify(minLampData)}
     var maxLampData =!{JSON.stringify(maxLampData)}
     
@@ -33,6 +37,36 @@ block content
                 "label": "Motion Sensor Events",
                 "data": sumMotionData.data,
                 "backgroundColor": sumMotionData.color
+            }]
+        },
+        "options": {
+            "responsive": false,
+            "scales": {
+                "xAxes": [{
+                  "ticks": {
+                    "source": "labels"
+                  }
+                }],
+                "yAxes": [{
+                    "ticks": {
+                        "beginAtZero": true
+                    }
+                }]
+            }
+        }
+    });
+
+    var ctx = document.getElementById("barChart2");
+
+
+    var barChart2 = new Chart(ctx, {
+        "type": "bar",
+        "data": {
+            "labels": sumTemperatureData.labels,
+            "datasets": [{
+                "label": "Temperature Sensor Events",
+                "data": sumTemperatureData.data,
+                "backgroundColor": sumTemperatureData.color
             }]
         },
         "options": {

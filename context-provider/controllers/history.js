@@ -51,6 +51,29 @@ function readCrateMotionCount(id, aggMethod) {
     });
 }
 
+function readCrateTemperatureCount(id, aggMethod) {
+    debug('readCrateTemperatureCount');
+    return new Promise(function (resolve, reject) {
+        const sqlStatement =
+            "SELECT DATE_FORMAT (DATE_TRUNC ('minute', time_index)) AS minute, " +
+            'AVG(count) AS ' +
+            aggMethod +
+            " FROM mtopeniot.ettemperature WHERE entity_id = 'Temperature:" +
+            id +
+            "' GROUP BY minute ORDER BY minute";
+        const options = {
+            method: 'POST',
+            url: crateUrl,
+            headers: { 'Content-Type': 'application/json' },
+            body: { stmt: sqlStatement },
+            json: true
+        };
+        request(options, (error, response, body) => {
+            return error ? reject(error) : resolve(body);
+        });
+    });
+}
+
 function readCrateLampLuminosity(id, aggMethod) {
     debug('readCrateLampLuminosity');
     return new Promise(function (resolve, reject) {
@@ -171,10 +194,12 @@ async function readCrateDeviceHistory(req, res) {
     const id = req.params.deviceId.split(':').pop();
 
     const crateMotionData = await readCrateMotionCount(id, 'sum');
+    const crateTemperatureData = await readCrateTemperatureCount(id, 'sum');
     const crateLampMinData = await readCrateLampLuminosity(id, 'min');
     const crateLampMaxData = await readCrateLampLuminosity(id, 'max');
 
     const sumMotionData = crateToTimeSeries(crateMotionData, 'sum', '#45d3dd');
+    const sumTemperatureData = crateToTimeSeries(crateTemperatureData, 'aggregation', '#45dd4f');
     const minLampData = crateToTimeSeries(crateLampMinData, 'min', '#45d3dd');
     const maxLampData = crateToTimeSeries(crateLampMaxData, 'max', '#45d3dd');
 
@@ -182,6 +207,7 @@ async function readCrateDeviceHistory(req, res) {
         title: 'IoT Device History',
         id,
         sumMotionData,
+        sumTemperatureData,
         minLampData,
         maxLampData
     });

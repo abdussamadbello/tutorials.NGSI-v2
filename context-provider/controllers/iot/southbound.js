@@ -73,6 +73,13 @@ module.exports = {
         return res.status(200).send();
     },
 
+        // The lamp can be "on" or "off" - it also registers luminosity.
+    // It will slowly dim as time passes (provided no movement is detected)
+    fanHttpCommand(req, res) {
+        debug('fanHttpCommand');
+        return Command.actuateFan(req, res);
+    },
+
     // The device monitor will display all MQTT messages on screen.
     // cmd topics are consumed by the actuators (bell, lamp and door)
     processMqttMessage(topic, message) {

@@ -18,14 +18,14 @@ block content
     | &nbsp;the alarm bell. 
   div.container
     div
-      +devicesForStore('001')
+      +devicesForRoom('001')
     div
-      +devicesForStore('002')
+      +devicesForRoom('002')
   div.container
     div
-      +devicesForStore('003')
+      +devicesForRoom('003')
     div
-      +devicesForStore('004')
+      +devicesForRoom('004')
 
   div
     hr
@@ -101,6 +101,21 @@ block content
                 li.css( "background-image", "url('/img/lamp-off.svg')" );
               }
               break;  
+            case "fan":
+              if (msg.includes('s|ON')){
+                li.css( "background-image", "url('/img/fan.svg')");
+              } else {
+                li.css( "background-image", "url('/img/fan-off.svg')" );
+              }
+              break;
+            case "temperature":
+              // ON or OFF - Switch off the bell if it is still ringing
+              if (msg ==='tmp|0'){
+                 li.css( "background-image", "url('/img/temperature-off.svg')");
+              } else {
+                li.css( "background-image", "url('/img/temperature-on.svg')" );
+              }
+              break; 
           }
         });
       });

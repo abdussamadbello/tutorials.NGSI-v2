@@ -1,4 +1,4 @@
-mixin devicesForStore(id)
+mixin devicesForRoom(id)
   p(style="color:#000000;")
     strong Devices in Room 
       code(style="font-size:large") urn:ngsi-ld:Room:#{id}
@@ -23,16 +23,30 @@ mixin devicesForStore(id)
         strong lamp#{id}
         | &nbsp;
         span(id=`lamp${id}`)
+    li.device(style="background-image: url('/img/temperature-off.svg')")
+      code 
+        strong temperature#{id}
+        | &nbsp;
+        span(id=`temperature${id}`)
+    li.device(style="background-image: url('/img/fan-off.svg')")
+      code 
+        strong fan#{id}
+        | &nbsp;
+        span(id=`fan${id}`)
   form.device(action="/device/command")
     input(type="text" style="display:none"  name="id" value=`${id}`)
     select(name="action")
       option(value="ring") Ring Bell
       option(value="presence") Detect Motion
+      option(value="measure") Monitor temperature
       option(value="unlock") Unlock Door
       option(value="open") Open Door
       option(value="close") Close Door
       option(value="lock") Lock Door
       option(value="on") Lamp On
       option(value="off") Lamp Off
+      option(value="high") Fan On
+      option(value="low") Fan Off
+
     | &nbsp;
     input(type="submit" value=`Send` class="button")

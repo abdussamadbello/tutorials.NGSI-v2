@@ -22,12 +22,19 @@ const BELL_ON = 's|ON';
 const LAMP_ON = 's|ON|l|1750';
 const LAMP_OFF = 's|OFF|l|0';
 
+const FAN_ON = 's|ON|l|1750';
+const FAN_OFF = 's|OFF|l|0';
+
 const NO_MOTION_DETECTED = 'c|0';
 const MOTION_DETECTED = 'c|1';
+
+const TEMPERATURE_OFF = 'tmp|0';
+const TEMPERATURE_ON = 'tmp|1';
 
 const VALID_COMMANDS = {
     door: ['open', 'close', 'lock', 'unlock'],
     lamp: ['on', 'off'],
+    fan: ['on', 'off'],
     bell: ['ring'],
     robot: ['move', 'unlock', 'empty']
 };
@@ -100,6 +107,14 @@ function actuateDevice(deviceId, command) {
                 setDeviceState(deviceId, LAMP_OFF);
             }
             break;
+        case 'fan':
+            if (command === 'on') {
+                    setDeviceState(deviceId, FAN_ON);
+            }
+            if (command === 'off') {
+                    setDeviceState(deviceId, FAN_OFF);
+             }
+            break;
     }
 }
 
@@ -157,6 +172,21 @@ myCache.set('motion001', NO_MOTION_DETECTED);
 myCache.set('motion002', NO_MOTION_DETECTED);
 myCache.set('motion003', NO_MOTION_DETECTED);
 myCache.set('motion004', NO_MOTION_DETECTED);
+
+
+myCache.set('fan001', LAMP_OFF);
+myCache.set('fan002', LAMP_OFF);
+myCache.set('fan003', LAMP_OFF);
+myCache.set('fan004', LAMP_OFF);
+
+
+
+myCache.set('temperature001', TEMPERATURE_OFF);
+myCache.set('temperature002', TEMPERATURE_OFF);
+myCache.set('temperature003', TEMPERATURE_OFF);
+myCache.set('temperature004', TEMPERATURE_OFF);
+
+
 
 if (robotEnabled) {
     myCache.set('robot001', 's|ACTIVE|l|EMPTY|gps|13.300,52.480');
@@ -287,6 +317,21 @@ function activateDevices() {
                 setDeviceState(deviceId, toUltraLight(state), isSensor);
                 break;
 
+            case 'temperature':
+                    // If the door is OPEN, randomly switch the count of the fan sensor
+                if (getDoorState(deviceId, 'temperature') === 'OPEN') {
+                    if (state.tmp === 1) {
+                        state.tmp = 0;
+                    } else {
+                        const randomnumber = Math.floor(Math.random() * (30 - 20 + 1)) + 20;
+                        state.tmp = getRandom() > 3 ? randomnumber: randomnumber-10;
+                    }
+                } else {
+                    state.tmp = 0;
+                }
+                setDeviceState(deviceId, toUltraLight(state), isSensor);
+                break;
+
             case 'lamp':
                 if (state.s === 'OFF') {
                     state.l = 0;
@@ -309,7 +354,31 @@ function activateDevices() {
                     state.l = state.l + getRandom();
                 }
                 break;
-        }
+              
+            case 'fan':
+                if (state.s === 'OFF') {
+                    state.l = 0;
+                } else if (getDoorState(deviceId, 'fan') === 'OPEN') {
+                    // if the door is open set the light to full power
+                    state.l = parseInt(state.l) || 1000;
+                    state.l = state.l + getRandom() * getRandom();
+                    if (state.l < 1850) {
+                        state.l = state.l + 30 + getRandom() * getRandom();
+                    }
+                    if (state.l > 1990) {
+                        state.l = 1990 + getRandom();
+                    }
+                } else if (state.l > 1000) {
+                    // if the door is closed dim the light
+                    state.l = parseInt(state.l) || 1990;
+                    if (getRandom() > 3) {
+                        state.l = state.l - 30 - getRandom() * getRandom();
+                    }
+                    state.l = state.l + getRandom();
+                }
+                break;            
+        
+            }
 
         setDeviceState(deviceId, toUltraLight(state), isSensor);
     });
@@ -392,7 +461,6 @@ function getLampState(deviceId, type) {
     const lamp = getDeviceState(deviceId.replace(type, 'lamp'));
     return lamp.s || 'OFF';
 }
-
 // Pick a random number between 1 and 10
 function getRandom() {
     return Math.floor(Math.random() * 10) + 1;
@@ -404,10 +472,15 @@ function fireMotionSensor(id) {
     setDeviceState(id, MOTION_DETECTED, true);
 }
 
+function temperatureSensor(id) {
+    debug('fireTemperatureSensor');
+    setDeviceState(id, TEMPERATURE_ON, true);
+}
+
 // Once a minute, read the existing state of the dummy devices
 function setUpSensorReading(deviceId) {
     const deviceType = deviceId.replace(/\d/g, '');
-    if (deviceType === 'lamp' || deviceType === 'motion') {
+    if (deviceType === 'lamp' || deviceType === 'motion'|| deviceType==="temperature"||deviceType==="fan") {
         setInterval(sendDeviceReading, 59999, deviceId);
     }
 }
@@ -433,6 +506,7 @@ function isUnknownCommand(device, command) {
 module.exports = {
     actuateDevice,
     fireMotionSensor,
+    temperatureSensor,
     addRobotGoal,
     notFound,
     isUnknownCommand

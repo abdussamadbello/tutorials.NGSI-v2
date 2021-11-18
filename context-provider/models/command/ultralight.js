@@ -97,6 +97,22 @@ class UltralightCommand {
         return res.status(200).send(result + OK);
     }
 
+    actuateFan(req, res) {
+        const keyValuePairs = req.body.split('|') || [''];
+        const command = getUltralightCommand(keyValuePairs[0]);
+        const deviceId = 'fan' + req.params.id;
+        const result = keyValuePairs[0] + '| ' + command;
+
+        if (IoTDevices.notFound(deviceId)) {
+            return res.status(404).send(result + NOT_OK);
+        } else if (IoTDevices.isUnknownCommand('fan', command)) {
+            return res.status(422).send(result + NOT_OK);
+        }
+
+        // Update device state
+        IoTDevices.actuateDevice(deviceId, command);
+        return res.status(200).send(result + OK);
+    }
     // The robot can be directed to move from A to B.
     // The box can also  be unlocked on command.
     actuateRobot(req, res) {
